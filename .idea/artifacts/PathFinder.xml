@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="PathFinder">
+    <output-path>$PROJECT_DIR$/../../../Test server/spigot/plugins</output-path>
+    <root id="archive" name="PathFinder.jar">
+      <element id="module-output" name="PathFinder" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,9 @@
+name: Pathfinder
+version: ${project.version}
+main: me.itslars.pathfinder.Main
+authors: [ItsLars]
+description: Path finding warp plugin
+
+commands:
+  pathfinder:
+    description: Main PathFinder command
