@@ -13,9 +13,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -182,6 +184,16 @@ public class Events implements Listener {
             // If not destroyed by hand
             player.sendMessage("§cPlease use a PathFinder tool to remove these armor stands.\n§7(/pathfinder tools)");
         }
+    }
+
+    @EventHandler
+    public void onChunkUnload(ChunkUnloadEvent e) {
+        boolean hasArmorStand = Arrays.stream(e.getChunk().getEntities())
+                .filter(entity -> entity instanceof ArmorStand)
+                .map(entity -> (ArmorStand) entity)
+                .anyMatch(Main.getInstance().nodeMap.values()::contains);
+
+        if (hasArmorStand) e.setCancelled(true);
     }
 
     @EventHandler

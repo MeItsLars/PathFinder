@@ -2,8 +2,10 @@ package me.itslars.pathfinder.util;
 
 import me.itslars.pathfinder.Main;
 import me.itslars.pathfinder.objects.pathfinding.Edge;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -28,7 +30,11 @@ public class SchedulerManager {
         Vector vector = p2.clone().subtract(p1).normalize().multiply(space);
         double length = 0;
         for (; length < distance; p1.add(vector)) {
-            point1.getWorld().spawnParticle(Particle.FLAME, p1.getX(), p1.getY() + 2, p1.getZ(), 1, 0, 0, 0, 0);
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player.getLocation().distance(point1) < 100 || player.getLocation().distance(point2) < 100) {
+                    player.spawnParticle(Particle.FLAME, p1.getX(), p1.getY() + 2, p1.getZ(), 1, 0, 0, 0, 0);
+                }
+            }
             length += space;
         }
     }

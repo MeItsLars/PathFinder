@@ -63,7 +63,7 @@ public class Commands implements CommandExecutor {
             } else if(args[0].equals("tools")) {
                 player.getInventory().addItem(
                         generateHoe("§r§eNode creator", "§rRight click this to", "§rcreate a node at", "§ryour current location", "", "§rLeft click to remove node"),
-                        generateHoe("§r§eEdge creator", "§rRright click this to", "§rcreate a connection", "§rbetween two nodes", "", "§rLeft click to remove node"));
+                        generateHoe("§r§eEdge creator", "§rRight click this to", "§rcreate a connection", "§rbetween two nodes", "", "§rLeft click to remove node"));
             } else if(args[0].equals("edit")) {
                 if(args.length == 2) {
                     if(args[1].equalsIgnoreCase("on")) {
@@ -71,6 +71,7 @@ public class Commands implements CommandExecutor {
                         main.nodeMap.clear();
 
                         for(Node node : main.nodes) {
+                            node.getLocation().getChunk().load();
                             ArmorStand nodeStand = (ArmorStand) node.getLocation().getWorld().spawnEntity(node.getLocation(), EntityType.ARMOR_STAND);
                             nodeStand.setGravity(false);
                             nodeStand.setInvulnerable(true);
