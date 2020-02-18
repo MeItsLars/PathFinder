@@ -22,11 +22,6 @@ public class PathFinder {
     private static Map<Player, BukkitTask> activePlayerRunnable = new HashMap<>();
     private static Map<Integer, BukkitTask> secondActiveRunnable = new HashMap<>();
 
-    @Deprecated
-    public static void navigatePath(Player player, Location startLocation, Location endLocation) {
-        navigatePath(player, startLocation, endLocation, true);
-    }
-
     /**
      * This method starts a navigation between two points.
      * startLocation end endLocation are connected to the two nodes that are closest.
