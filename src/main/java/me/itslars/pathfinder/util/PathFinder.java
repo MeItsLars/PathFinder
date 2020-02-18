@@ -79,7 +79,7 @@ public class PathFinder {
 
                 if (toCoordinates) path.add(endLocation);
 
-                while(result != null) {
+                while (result != null) {
                     path.add(result.getLocation());
                     result = result.getPreviousNode();
                 }
@@ -93,7 +93,7 @@ public class PathFinder {
                     @Override
                     public void run() {
                         if (!secondActiveRunnable.get(getTaskId()).isCancelled()) {
-                            navigatePath(player, player.getLocation(), endLocation);
+                            navigatePath(player, player.getLocation(), endLocation, toCoordinates);
                             secondActiveRunnable.remove(getTaskId());
                         }
                     }
