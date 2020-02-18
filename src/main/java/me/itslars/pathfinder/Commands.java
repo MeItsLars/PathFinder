@@ -41,7 +41,7 @@ public class Commands implements CommandExecutor {
         }
 
         if(args.length > 0) {
-            if(args[0].equals("search")) {
+            if (args[0].equals("search")) {
                 if(args.length != 4) {
                     player.sendMessage("§cInvalid arguments. Use /pathfinder search [destX] [destY] [destZ]");
                     return false;

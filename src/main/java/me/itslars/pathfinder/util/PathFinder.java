@@ -22,6 +22,11 @@ public class PathFinder {
     private static Map<Player, BukkitTask> activePlayerRunnable = new HashMap<>();
     private static Map<Integer, BukkitTask> secondActiveRunnable = new HashMap<>();
 
+    @Deprecated
+    public static void navigatePath(Player player, Location startLocation, Location endLocation) {
+        navigatePath(player, startLocation, endLocation, true);
+    }
+
     /**
      * This method starts a navigation between two points.
      * startLocation end endLocation are connected to the two nodes that are closest.
@@ -30,7 +35,7 @@ public class PathFinder {
      * @param startLocation the location at which the navigation begins
      * @param endLocation the location at which the navigation ends
      */
-    public static void navigatePath(Player player, Location startLocation, Location endLocation) {
+    public static void navigatePath(Player player, Location startLocation, Location endLocation, boolean toCoordinates) {
         final Main main = Main.getInstance();
         cancelPlayerActivePath(player);
 
@@ -72,7 +77,7 @@ public class PathFinder {
 
                 List<Location> path = new ArrayList<>();
 
-                path.add(endLocation);
+                if (toCoordinates) path.add(endLocation);
 
                 while(result != null) {
                     path.add(result.getLocation());
