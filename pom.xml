@@ -65,6 +65,14 @@
     </repositories>
 
     <dependencies>
+        <!-- Minetopia Core -->
+        <dependency>
+            <groupId>nl.dusdavidgames.minetopia</groupId>
+            <artifactId>Common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
