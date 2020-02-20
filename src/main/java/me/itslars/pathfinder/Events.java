@@ -179,7 +179,7 @@ public class Events implements Listener {
 
                             if(clickedNode != null) {
                                 main.nodes.remove(clickedNode);
-                                new PreparedStatement("DELETE FROM `minetopia`.`pathfinder_nodes` WHERE" +
+                                new PreparedStatement("DELETE FROM `minetopia`.`pathfinder_nodes` WHERE " +
                                         "uuid=?")
                                         .setString(clickedNode.getNodeID())
                                         .execute();
@@ -191,7 +191,7 @@ public class Events implements Listener {
                                         edgeIterator.remove();
                                     }
                                 }
-                                new PreparedStatement("DELETE FROM `minetopia`.`pathfinder_edges` WHERE" +
+                                new PreparedStatement("DELETE FROM `minetopia`.`pathfinder_edges` WHERE " +
                                         "from_uuid=? OR to_uuid=?")
                                         .setString(clickedNode.getNodeID())
                                         .setString(clickedNode.getNodeID())
