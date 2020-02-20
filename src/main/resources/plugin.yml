@@ -3,6 +3,7 @@ version: ${project.version}
 main: me.itslars.pathfinder.Main
 authors: [ItsLars]
 description: Path finding warp plugin
+softdepend: [Minetopia-Core]
 
 commands:
   pathfinder:
