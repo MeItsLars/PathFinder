@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
+import nl.dusdavidgames.minetopia.common.framework.database.objects.PreparedStatement;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.UUID;
@@ -55,6 +55,16 @@ public class Events implements Listener {
                                 nodeStand.setCustomNameVisible(true);
 
                                 main.nodeMap.put(node.getNodeID(), nodeStand);
+
+                                new PreparedStatement("INSERT INTO `minetopia`.`pathfinder_nodes` " +
+                                        "(uuid, world, x, y, z) VALUES " +
+                                        "(?, ?, ?, ?, ?);")
+                                        .setString(node.getNodeID())
+                                        .setString(nodeStand.getWorld().toString())
+                                        .setDouble(nodeStand.getLocation().getX())
+                                        .setDouble(nodeStand.getLocation().getY())
+                                        .setDouble(nodeStand.getLocation().getZ())
+                                .execute();
                             }
                         }
                     }
@@ -121,6 +131,13 @@ public class Events implements Listener {
                                     main.edges.add(edge);
                                     player.sendMessage("§aEdge created!");
                                     main.playerSelectedStartNode.remove(player);
+
+                                    new PreparedStatement("INSERT INTO `minetopia`.`pathfinder_edges` " +
+                                            "(from_uuid, to_uuid) VALUES " +
+                                            "(?, ?, ?, ?, ?);")
+                                            .setString(startNode.getNodeID())
+                                            .setString(clickedNode.getNodeID())
+                                    .execute();
                                 }
                             } else {
                                 main.playerSelectedStartNode.put(player, clickedNode.getNodeID());
@@ -162,7 +179,10 @@ public class Events implements Listener {
 
                             if(clickedNode != null) {
                                 main.nodes.remove(clickedNode);
-
+                                new PreparedStatement("DELETE FROM `minetopia`.`pathfinder_nodes` WHERE" +
+                                        "uuid=?")
+                                        .setString(clickedNode.getNodeID())
+                                        .execute();
                                 // Removing all edges
                                 Iterator<Edge> edgeIterator = main.edges.iterator();
                                 while(edgeIterator.hasNext()) {
@@ -171,6 +191,11 @@ public class Events implements Listener {
                                         edgeIterator.remove();
                                     }
                                 }
+                                new PreparedStatement("DELETE FROM `minetopia`.`pathfinder_edges` WHERE" +
+                                        "from_uuid=? OR to_uuid=?")
+                                        .setString(clickedNode.getNodeID())
+                                        .setString(clickedNode.getNodeID())
+                                        .execute();
 
                                 nodeStand.remove();
 

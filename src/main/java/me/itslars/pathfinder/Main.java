@@ -63,7 +63,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         nodeMap.values().forEach(ArmorStand::remove);
-        saveGraph();
+        //saveGraph();
     }
 
     private void loadGraph() {
@@ -114,19 +114,19 @@ public final class Main extends JavaPlugin {
                 });
     }
 
-    private void saveGraph() {
-        getConfig().set("nodes", null);
-        getConfig().set("edges", null);
-        saveConfig();
-
-        List<String> nodeList = nodes.stream().map(Serializer::nodeToString).collect(Collectors.toList());
-        getConfig().set("nodes", nodeList);
-        saveConfig();
-
-        List<String> edgeList = edges.stream().map(e -> e.getStart().getNodeID() + "#" + e.getEnd().getNodeID()).collect(Collectors.toList());
-        getConfig().set("edges", edgeList);
-        saveConfig();
-    }
+//    private void saveGraph() {
+//        getConfig().set("nodes", null);
+//        getConfig().set("edges", null);
+//        saveConfig();
+//
+//        List<String> nodeList = nodes.stream().map(Serializer::nodeToString).collect(Collectors.toList());
+//        getConfig().set("nodes", nodeList);
+//        saveConfig();
+//
+//        List<String> edgeList = edges.stream().map(e -> e.getStart().getNodeID() + "#" + e.getEnd().getNodeID()).collect(Collectors.toList());
+//        getConfig().set("edges", edgeList);
+//        saveConfig();
+//    }
 
     public static Main getInstance() {
         return main;
