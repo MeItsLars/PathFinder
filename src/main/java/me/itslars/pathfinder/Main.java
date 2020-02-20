@@ -1,22 +1,22 @@
 package me.itslars.pathfinder;
 
+import com.google.gson.JsonObject;
 import me.itslars.pathfinder.api.PathFinderApi;
 import me.itslars.pathfinder.objects.pathfinding.Edge;
 import me.itslars.pathfinder.objects.pathfinding.Node;
 import me.itslars.pathfinder.util.PathFinder;
 import me.itslars.pathfinder.util.SchedulerManager;
 import me.itslars.pathfinder.util.Serializer;
+import nl.dusdavidgames.minetopia.common.framework.database.objects.PreparedStatement;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class Main extends JavaPlugin {
@@ -37,11 +37,27 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        getConfig().options().copyDefaults(true);
-        saveConfig();
-
         getCommand("pathfinder").setExecutor(new Commands(this));
         Bukkit.getPluginManager().registerEvents(new Events(this), this);
+
+        new PreparedStatement("CREATE TABLE `pathfinder_nodes` (" +
+                "`uuid` VARCHAR(36) NOT NULL," +
+                "`world` VARCHAR(50) NOT NULL," +
+                "`x` DOUBLE NOT NULL DEFAULT 0," +
+                "`y` DOUBLE NOT NULL DEFAULT 0," +
+                "`z` DOUBLE NOT NULL DEFAULT 0," +
+                "PRIMARY KEY (`uuid`)" +
+                ")" +
+                "COLLATE='utf8mb4_0900_ai_ci';")
+                .executeUpdate();
+
+        new PreparedStatement("CREATE TABLE `pathfinder_edges` (" +
+                "`from_uuid` VARCHAR(36) NULL," +
+                "`to_uuid` VARCHAR(36) NULL" +
+                ")" +
+                "COLLATE='utf8mb4_0900_ai_ci';")
+                .executeUpdate();
+
 
         loadGraph();
         SchedulerManager.startEdgeIndicationScheduler(this);
@@ -50,52 +66,54 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         nodeMap.values().forEach(ArmorStand::remove);
-        saveGraph();
     }
 
     private void loadGraph() {
         Bukkit.getLogger().info("[PathFinder] Initializing PathFinder graph...");
         long startMillis = System.currentTimeMillis();
 
-        Map<String, Node> nodesMap = new HashMap<>();
+        // First load all nodes. Then, load all edges
+        new PreparedStatement("SELECT * FROM `minetopia`.`pathfinder_nodes`")
+                .execute()
+                .thenAccept(result -> {
+                    result.asArray().forEach(jsonElement -> {
+                        JsonObject object = (JsonObject) jsonElement;
 
-        List<String> nodesList = getConfig().getStringList("nodes");
-        if(nodes != null) {
-            nodesList.forEach(ns -> {
-                Node node = Serializer.stringToNode(ns);
-                nodes.add(node);
-                nodesMap.put(node.getNodeID(), node);
-            });
-        }
+                        Node node = new Node(object.get("uuid").getAsString(),
+                                new Location(Bukkit.getWorld(object.get("world").getAsString()),
+                                        object.get("x").getAsDouble(),
+                                        object.get("y").getAsDouble(),
+                                        object.get("z").getAsDouble()));
 
-        List<String> edgesList = getConfig().getStringList("edges");
-        if(edges != null) {
-            edgesList.forEach(es -> {
-                String[] parts = es.split("#");
-                Node startNode = nodesMap.get(parts[0]);
-                Node endNode = nodesMap.get(parts[1]);
-                if(startNode != null && endNode != null) {
-                    edges.add(new Edge(startNode, endNode));
-                }
-            });
-        }
+                        nodes.add(node);
+                    });
 
-        long difference = System.currentTimeMillis() - startMillis;
-        Bukkit.getLogger().info("[PathFinder] Finished initializing PathFinder graph. Took " + difference + "ms");
-    }
+                    // Load all edges
+                    new PreparedStatement("SELECT * FROM `minetopia`.`pathfinder_edges`")
+                            .execute()
+                            .thenAccept(result2 -> {
+                                result2.asArray().forEach(jsonElement -> {
+                                    JsonObject object = (JsonObject) jsonElement;
 
-    private void saveGraph() {
-        getConfig().set("nodes", null);
-        getConfig().set("edges", null);
-        saveConfig();
+                                    Optional<Node> fromNode = nodes.stream()
+                                            .filter(node -> node.getNodeID().equals(object.get("from_uuid").getAsString()))
+                                            .findAny();
 
-        List<String> nodeList = nodes.stream().map(Serializer::nodeToString).collect(Collectors.toList());
-        getConfig().set("nodes", nodeList);
-        saveConfig();
+                                    Optional<Node> toNode = nodes.stream()
+                                            .filter(node -> node.getNodeID().equals(object.get("to_uuid").getAsString()))
+                                            .findAny();
 
-        List<String> edgeList = edges.stream().map(e -> e.getStart().getNodeID() + "#" + e.getEnd().getNodeID()).collect(Collectors.toList());
-        getConfig().set("edges", edgeList);
-        saveConfig();
+                                    if (fromNode.isPresent() && toNode.isPresent()) {
+                                        Edge edge = new Edge(fromNode.get(), toNode.get());
+                                        edges.add(edge);
+                                    }
+                                });
+
+
+                                long difference = System.currentTimeMillis() - startMillis;
+                                Bukkit.getLogger().info("[PathFinder] Finished initializing PathFinder graph. Took " + difference + "ms");
+                            });
+                });
     }
 
     public static Main getInstance() {
