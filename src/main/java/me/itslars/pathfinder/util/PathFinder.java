@@ -30,7 +30,7 @@ public class PathFinder {
      * @param startLocation the location at which the navigation begins
      * @param endLocation the location at which the navigation ends
      */
-    public static void navigatePath(Player player, Location startLocation, Location endLocation, boolean toCoordinates) {
+    public static void navigatePath(Player player, Location startLocation, Location endLocation, boolean toCoordinates, boolean renavigateEnabled) {
         final Main main = Main.getInstance();
         cancelPlayerActivePath(player);
 
@@ -83,17 +83,18 @@ public class PathFinder {
 
                 BukkitTask task = PathManager.showPath(main, player, nodes, path);
                 activePlayerRunnable.put(player, task);
-
-                BukkitTask bukkitTask = new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        if (!secondActiveRunnable.get(getTaskId()).isCancelled()) {
-                            navigatePath(player, player.getLocation(), endLocation, toCoordinates);
-                            secondActiveRunnable.remove(getTaskId());
+                if(renavigateEnabled) {
+                    BukkitTask bukkitTask = new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            if (!secondActiveRunnable.get(getTaskId()).isCancelled()) {
+                                navigatePath(player, player.getLocation(), endLocation, toCoordinates, renavigateEnabled);
+                                secondActiveRunnable.remove(getTaskId());
+                            }
                         }
-                    }
-                }.runTaskLaterAsynchronously(main, 10 * 20L);
-                secondActiveRunnable.put(bukkitTask.getTaskId(), task);
+                    }.runTaskLaterAsynchronously(main, 10 * 20L);
+                    secondActiveRunnable.put(bukkitTask.getTaskId(), task);
+                }
             }
         }.runTaskAsynchronously(main);
     }

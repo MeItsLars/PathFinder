@@ -4,6 +4,7 @@ import me.itslars.pathfinder.objects.pathfinding.Edge;
 import me.itslars.pathfinder.objects.pathfinding.Node;
 import me.itslars.pathfinder.util.PathFinder;
 import nl.dusdavidgames.minetopia.common.framework.database.objects.PreparedStatement;
+import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -43,7 +44,14 @@ public class Events implements Listener {
                         Player player = e.getPlayer();
 
                         if(name.equals("§r§eNode creator")) {
-                            Node node = new Node(UUID.randomUUID().toString(), player.getLocation());
+                            Location loc;
+                            if(e.getPlayer().isSneaking()) {
+                                loc = e.getPlayer().getLocation().getBlock().getLocation();
+                                loc.add(0.5, 0, 0.5);
+                            } else {
+                                loc = e.getPlayer().getLocation();
+                            }
+                            Node node = new Node(UUID.randomUUID().toString(), loc);
                             main.nodes.add(node);
 
                             new PreparedStatement("INSERT INTO `minetopia`.`pathfinder_nodes` " +
@@ -60,7 +68,7 @@ public class Events implements Listener {
                             player.sendMessage("§aNew node created!");
                             if(main.nodeMap.isEmpty()) player.sendMessage("§7(Use '/pathfinder edit on' to display it)");
                             else {
-                                ArmorStand nodeStand = (ArmorStand) player.getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
+                                ArmorStand nodeStand = (ArmorStand) player.getWorld().spawnEntity(node.getLocation(), EntityType.ARMOR_STAND);
                                 nodeStand.setGravity(false);
                                 nodeStand.setInvulnerable(true);
                                 nodeStand.setCustomName("§ePathFinder §f- Node §7#" + node.getNodeID());

@@ -59,7 +59,7 @@ public class Commands implements CommandExecutor {
 
                 Location destination = new Location(player.getWorld(), x, y, z);
 
-                PathFinder.navigatePath(player, player.getLocation(), destination, false);
+                PathFinder.navigatePath(player, player.getLocation(), destination, false, true);
             } else if(args[0].equals("tools")) {
                 player.getInventory().addItem(
                         generateHoe("§r§eNode creator", "§rRight click this to", "§rcreate a node at", "§ryour current location", "", "§rLeft click to remove node"),
