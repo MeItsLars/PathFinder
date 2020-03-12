@@ -79,13 +79,25 @@ public final class Main extends JavaPlugin {
                     result.asArray().forEach(jsonElement -> {
                         JsonObject object = (JsonObject) jsonElement;
 
-                        Node node = new Node(object.get("uuid").getAsString(),
-                                new Location(Bukkit.getWorld(object.get("world").getAsString()),
-                                        object.get("x").getAsDouble(),
-                                        object.get("y").getAsDouble(),
-                                        object.get("z").getAsDouble()));
-
-                        nodes.add(node);
+                        if(Bukkit.getWorld("CHAXIA") != null) {
+                            if(object.get("world").getAsString().equalsIgnoreCase("CHAXIA")) {
+                                Node node = new Node(object.get("uuid").getAsString(),
+                                        new Location(Bukkit.getWorld(object.get("world").getAsString()),
+                                                object.get("x").getAsDouble(),
+                                                object.get("y").getAsDouble(),
+                                                object.get("z").getAsDouble()));
+                                nodes.add(node);
+                            }
+                        } else if(Bukkit.getWorld("GRINDING") != null) {
+                            if(object.get("world").getAsString().equalsIgnoreCase("GRINDING")) {
+                                Node node = new Node(object.get("uuid").getAsString(),
+                                        new Location(Bukkit.getWorld(object.get("world").getAsString()),
+                                                object.get("x").getAsDouble(),
+                                                object.get("y").getAsDouble(),
+                                                object.get("z").getAsDouble()));
+                                nodes.add(node);
+                            }
+                        }
                     });
 
                     // Load all edges
