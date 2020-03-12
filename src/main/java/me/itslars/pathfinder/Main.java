@@ -78,7 +78,6 @@ public final class Main extends JavaPlugin {
                 .thenAccept(result -> {
                     result.asArray().forEach(jsonElement -> {
                         JsonObject object = (JsonObject) jsonElement;
-
                         if(Bukkit.getWorld("CHAXIA") != null) {
                             if(object.get("world").getAsString().equalsIgnoreCase("CHAXIA")) {
                                 Node node = new Node(object.get("uuid").getAsString(),
@@ -90,6 +89,15 @@ public final class Main extends JavaPlugin {
                             }
                         } else if(Bukkit.getWorld("GRINDING") != null) {
                             if(object.get("world").getAsString().equalsIgnoreCase("GRINDING")) {
+                                Node node = new Node(object.get("uuid").getAsString(),
+                                        new Location(Bukkit.getWorld(object.get("world").getAsString()),
+                                                object.get("x").getAsDouble(),
+                                                object.get("y").getAsDouble(),
+                                                object.get("z").getAsDouble()));
+                                nodes.add(node);
+                            }
+                        }  else if(Bukkit.getWorld("ARCHIEF") != null) {
+                            if(object.get("world").getAsString().equalsIgnoreCase("ARCHIEF")) {
                                 Node node = new Node(object.get("uuid").getAsString(),
                                         new Location(Bukkit.getWorld(object.get("world").getAsString()),
                                                 object.get("x").getAsDouble(),
