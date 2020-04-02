@@ -100,10 +100,12 @@ public class PathFinder {
     }
 
     public static void cancelPlayerActivePath(Player player) {
-        if(activePlayerRunnable.containsKey(player)) {
+        if (activePlayerRunnable.containsKey(player)) {
             BukkitTask task = activePlayerRunnable.get(player);
             task.cancel();
             PathManager.activePlayerRoute.remove(player);
+            activePlayerRunnable.remove(player);
+            secondActiveRunnable.entrySet().removeIf(entry -> entry.getKey() == task.getTaskId());
         }
     }
 
